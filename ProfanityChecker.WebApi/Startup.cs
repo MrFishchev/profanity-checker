@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ namespace ProfanityChecker.WebApi
             });
 
             services.AddDbContext<DataContext>(
-                options => options.UseSqlite(@"Data Source=C:\profanity_checker.db")
+                options => options.UseSqlite(@"Data Source=../db/profanity_checker.db")
             );
             
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));  
