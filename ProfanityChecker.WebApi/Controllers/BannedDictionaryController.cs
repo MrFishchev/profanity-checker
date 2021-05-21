@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -22,26 +24,49 @@ namespace ProfanityChecker.WebApi.Controllers
 
         [HttpGet]
         [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.GetAll))]
-        public IAsyncEnumerable<BannedPhraseDto> GetAll(CancellationToken ct = default)
+        public async Task<IEnumerable<BannedPhraseDto>> GetAll(CancellationToken ct = default)
         {
-            var bannedDictionary = _bannedPhraseRepository.GetAll();
-            return GetAllAsync();
+            var bannedPhrases = await _bannedPhraseRepository.GetAllAsync();
+            return bannedPhrases.Select(x => new BannedPhraseDto {Id = x.Id, Name = x.Name});
+        }
 
-            async IAsyncEnumerable<BannedPhraseDto> GetAllAsync()
-            {
-                await foreach (var bannedPhrase in bannedDictionary.WithCancellation(ct))
-                {
-                    yield return new BannedPhraseDto {Id = bannedPhrase.Id, Name = bannedPhrase.Name};
-                }
-            }
+        [HttpGet("{id:long}")]
+        [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.GetBy))]
+        public async Task<ActionResult<BannedPhraseDto>> GetById(long id, CancellationToken ct = default)
+        {
+            var bannedPhrase = await _bannedPhraseRepository.GetByIdAsync(id);
+
+            if (bannedPhrase == null)
+                return NotFound();
+
+            return new BannedPhraseDto {Id = bannedPhrase.Id, Name = bannedPhrase.Name};
         }
 
         [HttpPost]
         [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.Create))]
-        public async Task<ActionResult<long>> Create(AddBannedPhraseRequest request, CancellationToken ct = default)
+        public Task<ActionResult<long>> Create(AddBannedPhraseRequest request, CancellationToken ct = default)
         {
-            var entity = await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = request.Name});
-            return entity is null ? Conflict() : CreatedAtAction(nameof(Create), entity.Id);
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ArgumentException("Parameter cannot be null or empty", nameof(request.Name));
+
+            return CreateAsync();
+
+            async Task<ActionResult<long>> CreateAsync()
+            {
+                var entity = await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = request.Name});
+                return entity is null ? Conflict() : CreatedAtAction(nameof(Create), entity.Id);
+            }
+        }
+
+        [HttpDelete("{id:long}")]
+        [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.Delete))]
+        public async Task<ActionResult> Delete(long id, CancellationToken ct = default)
+        {
+            var bannedPhrase = await _bannedPhraseRepository.GetByIdAsync(id);
+            if (bannedPhrase == null) return NotFound();
+            
+            await _bannedPhraseRepository.DeleteAsync(bannedPhrase);
+            return Ok();
         }
     }
 }
