@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -12,6 +13,8 @@ namespace ProfanityChecker.WebApi
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
+                .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "Log.log"), rollingInterval: RollingInterval.Day,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
             try
