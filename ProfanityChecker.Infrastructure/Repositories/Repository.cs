@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -15,11 +16,11 @@ namespace ProfanityChecker.Infrastructure
             DataContext = dataContext;
         }
 
-        public IAsyncEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             try
             {
-                return DataContext.Set<TEntity>().AsNoTracking().AsAsyncEnumerable();
+                return await DataContext.Set<TEntity>().AsNoTracking().ToListAsync();
             }
             catch (Exception e)
             {
@@ -63,6 +64,23 @@ namespace ProfanityChecker.Infrastructure
             {
                 Log.Error(e, e.Message);
                 throw new InvalidOperationException($"Unable to update {nameof(entity)}: {e.Message}");
+            }
+        }
+
+        public async Task DeleteAsync(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity), "Parameter must be not null");
+
+            try
+            {
+                DataContext.Remove(entity);
+                await DataContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, e.Message);
+                throw new InvalidOperationException($"Unable to delete {nameof(entity)}: {e.Message}");
             }
         }
     }
