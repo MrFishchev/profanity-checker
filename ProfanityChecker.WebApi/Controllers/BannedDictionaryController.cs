@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProfanityChecker.Domain;
 using ProfanityChecker.Infrastructure;
+using ProfanityChecker.Logic;
 using ProfanityChecker.Logic.DTO;
 using ProfanityChecker.WebApi.Requests;
 
@@ -16,10 +18,12 @@ namespace ProfanityChecker.WebApi.Controllers
     public class BannedDictionaryController : ControllerBase
     {
         private readonly IBannedPhraseRepository _bannedPhraseRepository;
+        private readonly IFileService _fileService;
 
-        public BannedDictionaryController(IBannedPhraseRepository bannedPhraseRepository)
+        public BannedDictionaryController(IBannedPhraseRepository bannedPhraseRepository, IFileService fileService)
         {
             _bannedPhraseRepository = bannedPhraseRepository;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -55,6 +59,44 @@ namespace ProfanityChecker.WebApi.Controllers
             {
                 var entity = await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = request.Name});
                 return entity is null ? Conflict() : CreatedAtAction(nameof(Create), entity.Id);
+            }
+        }
+        
+        [HttpPost("range")]
+        [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.Create))]
+        public Task<ActionResult<int>> CreateRangeFromFile([FromForm]IFormFile file, CancellationToken ct = default)
+        {
+            if (file == null)
+                throw new ArgumentNullException(nameof(file), "Parameter cannot be null");
+            
+            if (file.Length == 0)
+                throw new ArgumentException("File cannot be empty", nameof(file));
+
+            return CreateRangeAsync();
+
+            async Task<ActionResult<int>> CreateRangeAsync()
+            {
+                var tempPath = await _fileService.SaveAsTempFileAsync(file, ct);
+                if (string.IsNullOrWhiteSpace(tempPath))
+                    return Problem("Unable to save a file");
+
+                var existingPhrases = (await _bannedPhraseRepository.GetAllAsync()).ToList();
+                var fileLines = (await _fileService.GetLinesAsync(tempPath)).ToList();
+
+                var addedPhraseCount = 0;
+                foreach (var line in fileLines)
+                {
+                    if (!string.IsNullOrWhiteSpace(line) && existingPhrases.All(x => x.Name != line))
+                    {
+                        await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = line});
+                        addedPhraseCount++;
+                    }
+                }
+                
+                // TODO: repo save changes
+                
+                await _fileService.DeleteFileAsync(tempPath);
+                return CreatedAtAction(nameof(CreateRangeFromFile), addedPhraseCount);
             }
         }
 

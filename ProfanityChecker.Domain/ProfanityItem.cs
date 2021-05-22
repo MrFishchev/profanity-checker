@@ -11,8 +11,6 @@ namespace ProfanityChecker.Domain
 
         public List<int> Indexes { get; set; } = new();
 
-        public long Count { get; set; } = 1;
-        
         public string FullBounds { get; }
 
         public ProfanityItem(string data, string fullBounds, int index)
@@ -32,7 +30,7 @@ namespace ProfanityChecker.Domain
             if (item == null)
                 return false;
             
-            return Data == item.Data && FullBounds == item.FullBounds;
+            return Data == item.Data;
         }
 
         public override int GetHashCode()

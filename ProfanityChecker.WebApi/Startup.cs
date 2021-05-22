@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ProfanityChecker.Infrastructure;
+using ProfanityChecker.Logic;
 using Serilog;
 
 namespace ProfanityChecker.WebApi
@@ -34,7 +35,10 @@ namespace ProfanityChecker.WebApi
             );
             
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));  
-            services.AddTransient<IBannedPhraseRepository, BannedPhraseRepository>();  
+            services.AddTransient<IBannedPhraseRepository, BannedPhraseRepository>();
+            services.AddTransient<IFileService, FileService>();
+            services.AddScoped<IProfanityService, ProfanityService>();
+            services.AddSingleton<IAlgorithmFactory, AlgorithmFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

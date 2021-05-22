@@ -9,9 +9,9 @@ namespace ProfanityChecker.Logic
 {
     public class AhoCorasickAlgorithm : ISearchingAlgorithm
     {
-        private AhoCorasickTreeNode Root { get; set; }
+        private AhoCorasickTreeNode Root { get; }
 
-        public AhoCorasickAlgorithm(IEnumerable<string> dictionary)
+        private AhoCorasickAlgorithm(List<string> dictionary)
         {
             if (!dictionary.Any())
                 throw new ArgumentException("Parameter cannot be empty", nameof(dictionary));
@@ -23,6 +23,11 @@ namespace ProfanityChecker.Logic
                 AddPatternToTree(phrase);
             }
             SetFailureNodes();
+        }
+
+        public static AhoCorasickAlgorithm Create(IEnumerable<string> dictionary)
+        {
+            return new(dictionary.ToList());
         }
         
         public IEnumerable<ProfanityItem> FindAll(string data, CancellationToken ct)
@@ -48,7 +53,6 @@ namespace ProfanityChecker.Logic
                     var existing = result.FirstOrDefault(x => x.Equals(profanityItem));
                     if (existing != null)
                     {
-                        existing.Count++;
                         existing.Indexes.Add(startIndex);
                     }
                     else

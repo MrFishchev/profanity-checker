@@ -9,15 +9,14 @@ namespace ProfanityChecker.Logic
 {
     public class ProfanityService : IProfanityService
     {
-        private readonly ISearchingAlgorithm _searchingAlgorithm;
+        private readonly IAlgorithmFactory _algorithmFactory;
         private readonly IBannedPhraseRepository _bannedPhraseRepository;
         private readonly ILogger<ProfanityService> _logger;
 
-        public ProfanityService(ISearchingAlgorithm searchingAlgorithm, IBannedPhraseRepository bannedPhraseRepository,
+        public ProfanityService(IAlgorithmFactory algorithmFactory, IBannedPhraseRepository bannedPhraseRepository,
             ILogger<ProfanityService> logger)
         {
-            // TODO: Resolve different algorithms
-            _searchingAlgorithm = searchingAlgorithm;
+            _algorithmFactory = algorithmFactory;
             _bannedPhraseRepository = bannedPhraseRepository;
             _logger = logger;
         }
@@ -25,8 +24,9 @@ namespace ProfanityChecker.Logic
         public async Task<ProfanityScanResult> ScanAsync(string data, CancellationToken ct)
         {
             var dictionary = await _bannedPhraseRepository.GetAllAsync();
-            var search = _searchingAlgorithm.FindAll(data, ct);
-
+            var searchingAlgorithm = _algorithmFactory.CreateAlgorithm<AhoCorasickAlgorithm>(dictionary.Select(x => x.Name));
+            var search = searchingAlgorithm.FindAll(data, ct).ToList();
+            
             if (!search.Any())
             {
                 _logger.LogInformation("Profanity not found");

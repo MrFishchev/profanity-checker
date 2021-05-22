@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace ProfanityChecker.Logic.Tests
@@ -8,8 +11,19 @@ namespace ProfanityChecker.Logic.Tests
     [TestFixture]
     public class AhoCorasickAlgorithmTests
     {
+        private readonly IAlgorithmFactory _algorithmFactory;
         private ISearchingAlgorithm _searchingAlgorithm;
         private HashSet<string> _dictionary;
+
+        public AhoCorasickAlgorithmTests()
+        {
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddTransient<IAlgorithmFactory, AlgorithmFactory>();
+            var serviceProvider = services.BuildServiceProvider();
+
+            _algorithmFactory = serviceProvider.GetService<IAlgorithmFactory>();
+        }
 
         [SetUp]
         public void SetUp()
@@ -18,7 +32,7 @@ namespace ProfanityChecker.Logic.Tests
             {
                 "a b"
             };
-            _searchingAlgorithm = new AhoCorasickAlgorithm(_dictionary);
+            _searchingAlgorithm = _algorithmFactory.CreateAlgorithm<AhoCorasickAlgorithm>(_dictionary);
         }
 
         #region Search Tests
@@ -33,7 +47,6 @@ namespace ProfanityChecker.Logic.Tests
 
             result.Should().HaveCount(1);
             result.First().Data.Should().Be("a b");
-            result.First().Count.Should().Be(1);
             result.First().Indexes.Should().HaveCount(1);
         }
 
@@ -71,7 +84,7 @@ namespace ProfanityChecker.Logic.Tests
             var result = _searchingAlgorithm.FindAll(text).ToList();
 
             result.Should().HaveCount(expectedItems);
-            result.FirstOrDefault()?.Count.Should().Be(expectedCount);
+            result.FirstOrDefault()?.Indexes.Count.Should().Be(expectedCount);
         }
 
         [Test]
@@ -92,7 +105,6 @@ namespace ProfanityChecker.Logic.Tests
 
             result.Should().HaveCount(1);
             result.First().FullBounds.Should().Be(expectedBounds);
-            result.First().Count.Should().Be(1);
             result.First().Data.Should().Be("a b");
             result.First().Indexes.Should().HaveCount(1);
             result.First().Indexes.First().Should().Be(5);
@@ -108,7 +120,6 @@ namespace ProfanityChecker.Logic.Tests
             var result = _searchingAlgorithm.FindAll(text).ToList();
 
             result.Should().HaveCount(1);
-            result.First().Count.Should().Be(1);
             result.First().Data.Should().Be("a b");
             result.First().Indexes.Should().HaveCount(1);
         }
@@ -122,7 +133,7 @@ namespace ProfanityChecker.Logic.Tests
         public void Contains_WhenCalled_ReturnsTrue(string text)
         {
             _dictionary.Add("ccc");
-            _searchingAlgorithm = new AhoCorasickAlgorithm(_dictionary);
+            _searchingAlgorithm = _algorithmFactory.CreateAlgorithm<AhoCorasickAlgorithm>(_dictionary);
 
             var result = _searchingAlgorithm.ContainsAny(text);
 
