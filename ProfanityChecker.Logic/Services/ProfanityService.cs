@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using ProfanityChecker.Domain;
 using ProfanityChecker.Infrastructure;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public class ProfanityService : IProfanityService

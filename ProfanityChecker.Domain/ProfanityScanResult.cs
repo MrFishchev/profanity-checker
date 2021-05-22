@@ -23,6 +23,6 @@ namespace ProfanityChecker.Domain
             return new ProfanityScanResult(profanityItems);
         }
 
-        public static ProfanityScanResult NoProfanity => new ProfanityScanResult(null);
+        public static ProfanityScanResult NoProfanity => new(null);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     internal class AhoCorasickTreeNode

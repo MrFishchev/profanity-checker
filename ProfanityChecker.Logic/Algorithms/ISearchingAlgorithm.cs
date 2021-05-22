@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ProfanityChecker.Domain;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public interface ISearchingAlgorithm

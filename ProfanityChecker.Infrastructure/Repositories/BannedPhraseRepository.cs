@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProfanityChecker.Domain;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Infrastructure
 {
     public class BannedPhraseRepository : Repository<BannedPhrase>, IBannedPhraseRepository

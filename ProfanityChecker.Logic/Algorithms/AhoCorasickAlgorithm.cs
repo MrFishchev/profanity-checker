@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using ProfanityChecker.Domain;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public class AhoCorasickAlgorithm : ISearchingAlgorithm

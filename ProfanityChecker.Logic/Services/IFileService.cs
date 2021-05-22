@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public interface IFileService
