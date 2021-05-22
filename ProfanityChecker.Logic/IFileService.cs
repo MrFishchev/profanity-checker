@@ -14,6 +14,6 @@ namespace ProfanityChecker.Logic
 
         Task<string?> GetWholeTextAsync(string path);
 
-        Task<IEnumerable<string>> GetLinesAsync(string path);
+        Task<IEnumerable<string>> GetLinesAsync(string path, CancellationToken ct = default);
     }
 }

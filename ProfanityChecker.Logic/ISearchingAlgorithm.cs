@@ -8,6 +8,6 @@ namespace ProfanityChecker.Logic
     {
         IEnumerable<ProfanityItem> FindAll(string data, CancellationToken ct = default);
 
-        bool ContainsAny(string data);
+        bool ContainsAny(string data, CancellationToken ct = default);
     }
 }

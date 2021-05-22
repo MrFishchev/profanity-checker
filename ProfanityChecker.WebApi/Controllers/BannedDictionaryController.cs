@@ -81,7 +81,7 @@ namespace ProfanityChecker.WebApi.Controllers
                     return Problem("Unable to save a file");
 
                 var existingPhrases = (await _unitOfWork.BannedPhrases.GetAllAsync(ct)).ToList();
-                var fileLines = (await _fileService.GetLinesAsync(tempPath)).ToList();
+                var fileLines = (await _fileService.GetLinesAsync(tempPath, ct)).ToList();
 
                 var addedPhraseCount = 0;
                 foreach (var line in fileLines)

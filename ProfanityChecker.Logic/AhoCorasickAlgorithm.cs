@@ -36,32 +36,43 @@ namespace ProfanityChecker.Logic
             
             var node = Root;
 
-            for (var i = 0; i<data.Length; i++)
+            try
             {
-                var c = data[i];
-                var transition = GetTransition(c, ref node);
 
-                if (transition != null) node = transition;
-
-                foreach (var resultValue in node.Result)
+                for (var i = 0; i < data.Length; i++)
                 {
-                    // get whole word or phrase from left to right until spaces
-                    var startIndex = i - resultValue.Length + 1;
-                    var fullBounds = GetFullBounds(startIndex, i);
-                    var profanityItem = new ProfanityItem(resultValue, fullBounds, startIndex);
-                    
-                    var existing = result.FirstOrDefault(x => x.Equals(profanityItem));
-                    if (existing != null)
+                    ct.ThrowIfCancellationRequested();
+
+                    var c = data[i];
+                    var transition = GetTransition(c, ref node);
+
+                    if (transition != null) node = transition;
+
+                    foreach (var resultValue in node.Result)
                     {
-                        existing.FullBounds.Add(fullBounds);
-                        existing.Indexes.Add(startIndex);
-                    }
-                    else
-                    {
-                        result.Add(profanityItem);
+                        // get whole word or phrase from left to right until spaces
+                        var startIndex = i - resultValue.Length + 1;
+                        var fullBounds = GetFullBounds(startIndex, i);
+                        var profanityItem = new ProfanityItem(resultValue, fullBounds, startIndex);
+
+                        var existing = result.FirstOrDefault(x => x.Equals(profanityItem));
+                        if (existing != null)
+                        {
+                            existing.FullBounds.Add(fullBounds);
+                            existing.Indexes.Add(startIndex);
+                        }
+                        else
+                        {
+                            result.Add(profanityItem);
+                        }
                     }
                 }
             }
+            catch (OperationCanceledException e)
+            {
+                return new List<ProfanityItem>(0);
+            }
+
             return result;
             
             string GetFullBounds(int startIndex, int endIndex)
@@ -93,18 +104,28 @@ namespace ProfanityChecker.Logic
             }
         }
         
-        public bool ContainsAny(string data)
+        public bool ContainsAny(string data, CancellationToken ct)
         {
             var node = Root;
 
-            foreach (var c in data)
+            try
             {
-                var transition = GetTransition(c, ref node);
+                foreach (var c in data)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    
+                    var transition = GetTransition(c, ref node);
 
-                if (transition != null) node = transition;
+                    if (transition != null) node = transition;
 
-                if (node.Result.Any()) return true;
+                    if (node.Result.Any()) return true;
+                }
             }
+            catch (OperationCanceledException e)
+            {
+                return false;
+            }
+
 
             return false;
         }

@@ -52,7 +52,7 @@ namespace ProfanityChecker.Logic
             }
         }
 
-        public async Task<IEnumerable<string>> GetLinesAsync(string path)
+        public async Task<IEnumerable<string>> GetLinesAsync(string path, CancellationToken ct)
         {
             var result = new List<string>();
             try
@@ -60,14 +60,15 @@ namespace ProfanityChecker.Logic
                 using var sr = new StreamReader(path);
                 while (!sr.EndOfStream)
                 {
+                    ct.ThrowIfCancellationRequested();
                     var line = await sr.ReadLineAsync();
-                    if(!string.IsNullOrWhiteSpace(line))
+                    if (!string.IsNullOrWhiteSpace(line))
                         result.Add(line);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // ignore
+                return result;
             }
 
             return result;
