@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using ProfanityChecker.Domain;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public class AhoCorasickAlgorithm : ISearchingAlgorithm
@@ -15,9 +16,13 @@ namespace ProfanityChecker.Logic
         {
             if (!dictionary.Any())
                 throw new ArgumentException("Parameter cannot be empty", nameof(dictionary));
-            
+
             Root = AhoCorasickTreeNode.CreateNode();
-            
+            Initialize(dictionary);
+        }
+
+        private void Initialize(List<string> dictionary)
+        {
             foreach (var phrase in dictionary)
             {
                 AddPatternToTree(phrase);
@@ -29,23 +34,20 @@ namespace ProfanityChecker.Logic
         {
             return new(dictionary.ToList());
         }
-        
+
         public IEnumerable<ProfanityItem> FindAll(string data, CancellationToken ct)
         {
             var result = new List<ProfanityItem>();
-            
             var node = Root;
 
             try
             {
-
                 for (var i = 0; i < data.Length; i++)
                 {
                     ct.ThrowIfCancellationRequested();
 
                     var c = data[i];
                     var transition = GetTransition(c, ref node);
-
                     if (transition != null) node = transition;
 
                     foreach (var resultValue in node.Result)
@@ -53,8 +55,8 @@ namespace ProfanityChecker.Logic
                         // get whole word or phrase from left to right until spaces
                         var startIndex = i - resultValue.Length + 1;
                         var fullBounds = GetFullBounds(startIndex, i);
+                        
                         var profanityItem = new ProfanityItem(resultValue, fullBounds, startIndex);
-
                         var existing = result.FirstOrDefault(x => x.Equals(profanityItem));
                         if (existing != null)
                         {
@@ -115,9 +117,7 @@ namespace ProfanityChecker.Logic
                     ct.ThrowIfCancellationRequested();
                     
                     var transition = GetTransition(c, ref node);
-
                     if (transition != null) node = transition;
-
                     if (node.Result.Any()) return true;
                 }
             }
@@ -125,7 +125,6 @@ namespace ProfanityChecker.Logic
             {
                 return false;
             }
-
 
             return false;
         }
@@ -204,6 +203,5 @@ namespace ProfanityChecker.Logic
                 nodes = newNodes;
             }
         }
-        
     }
 }

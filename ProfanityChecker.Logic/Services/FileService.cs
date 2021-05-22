@@ -5,11 +5,20 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic
 {
     public class FileService : IFileService
     {
+        private readonly ILogger<FileService> _logger;
+
+        public FileService(ILogger<FileService> logger)
+        {
+            _logger = logger;
+        }
+        
         public async Task<string?> SaveAsTempFileAsync(IFormFile file, CancellationToken ct)
         {
             try
@@ -21,6 +30,7 @@ namespace ProfanityChecker.Logic
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Unable to save file into a temp folder");
                 return null;
             }
         }
@@ -31,9 +41,9 @@ namespace ProfanityChecker.Logic
             {
                 File.Delete(path);
             }
-            catch
+            catch(Exception e)
             {
-                // ignore    
+                _logger.LogError(e, $"Unable to delete file {path}");
             }
             
             return Task.CompletedTask;
@@ -48,6 +58,7 @@ namespace ProfanityChecker.Logic
             }
             catch (Exception e)
             {
+                _logger.LogError(e, $"Unable to get whole text of the file ({path})");
                 return null;
             }
         }
@@ -66,8 +77,14 @@ namespace ProfanityChecker.Logic
                         result.Add(line);
                 }
             }
+            catch (OperationCanceledException e)
+            {
+                _logger.LogInformation($"Operation was cancelled {nameof(GetLinesAsync)}");
+                return new List<string>(0);
+            }
             catch (Exception e)
             {
+                _logger.LogError(e, $"Unable to get lines from file {path}");
                 return result;
             }
 

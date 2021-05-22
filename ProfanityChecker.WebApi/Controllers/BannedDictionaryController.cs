@@ -78,7 +78,7 @@ namespace ProfanityChecker.WebApi.Controllers
             {
                 var tempPath = await _fileService.SaveAsTempFileAsync(file, ct);
                 if (string.IsNullOrWhiteSpace(tempPath))
-                    return Problem("Unable to save a file");
+                    return Conflict("Unable to save a file");
 
                 var existingPhrases = (await _unitOfWork.BannedPhrases.GetAllAsync(ct)).ToList();
                 var fileLines = (await _fileService.GetLinesAsync(tempPath, ct)).ToList();

@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Infrastructure
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new()
     {
         protected readonly DataContext DataContext;
 
-        public Repository(DataContext dataContext)
+        protected Repository(DataContext dataContext)
         {
             DataContext = dataContext;
         }
