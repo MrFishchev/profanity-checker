@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -37,8 +36,6 @@ namespace ProfanityChecker.Infrastructure
             try
             {
                 await DataContext.AddAsync(entity);
-                await DataContext.SaveChangesAsync();
-
                 return entity;
             }
             catch (Exception e)
@@ -48,7 +45,7 @@ namespace ProfanityChecker.Infrastructure
             }
         }
 
-        public async Task<TEntity> UpdateAsync(TEntity entity)
+        public Task<TEntity> UpdateAsync(TEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity), "Parameter must be not null");
@@ -56,9 +53,7 @@ namespace ProfanityChecker.Infrastructure
             try
             {
                 DataContext.Update(entity);
-                await DataContext.SaveChangesAsync();
-
-                return entity;
+                return Task.FromResult(entity);
             }
             catch (Exception e)
             {
@@ -67,7 +62,7 @@ namespace ProfanityChecker.Infrastructure
             }
         }
 
-        public async Task DeleteAsync(TEntity entity)
+        public Task DeleteAsync(TEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity), "Parameter must be not null");
@@ -75,7 +70,7 @@ namespace ProfanityChecker.Infrastructure
             try
             {
                 DataContext.Remove(entity);
-                await DataContext.SaveChangesAsync();
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {

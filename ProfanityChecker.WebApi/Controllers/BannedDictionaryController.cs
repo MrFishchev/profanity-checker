@@ -17,12 +17,12 @@ namespace ProfanityChecker.WebApi.Controllers
     [Route("api/[controller]")]
     public class BannedDictionaryController : ControllerBase
     {
-        private readonly IBannedPhraseRepository _bannedPhraseRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
 
-        public BannedDictionaryController(IBannedPhraseRepository bannedPhraseRepository, IFileService fileService)
+        public BannedDictionaryController(IUnitOfWork unitOfWork, IFileService fileService)
         {
-            _bannedPhraseRepository = bannedPhraseRepository;
+            _unitOfWork = unitOfWork;
             _fileService = fileService;
         }
 
@@ -30,7 +30,7 @@ namespace ProfanityChecker.WebApi.Controllers
         [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.GetAll))]
         public async Task<IEnumerable<BannedPhraseDto>> GetAll(CancellationToken ct = default)
         {
-            var bannedPhrases = await _bannedPhraseRepository.GetAllAsync();
+            var bannedPhrases = await _unitOfWork.BannedPhrases.GetAllAsync();
             return bannedPhrases.Select(x => new BannedPhraseDto {Id = x.Id, Name = x.Name});
         }
 
@@ -38,7 +38,7 @@ namespace ProfanityChecker.WebApi.Controllers
         [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.GetBy))]
         public async Task<ActionResult<BannedPhraseDto>> GetById(long id, CancellationToken ct = default)
         {
-            var bannedPhrase = await _bannedPhraseRepository.GetByIdAsync(id);
+            var bannedPhrase = await _unitOfWork.BannedPhrases.GetByIdAsync(id);
 
             if (bannedPhrase == null)
                 return NotFound();
@@ -57,7 +57,7 @@ namespace ProfanityChecker.WebApi.Controllers
 
             async Task<ActionResult<long>> CreateAsync()
             {
-                var entity = await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = request.Name});
+                var entity = await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase {Name = request.Name});
                 return entity is null ? Conflict() : CreatedAtAction(nameof(Create), entity.Id);
             }
         }
@@ -80,7 +80,7 @@ namespace ProfanityChecker.WebApi.Controllers
                 if (string.IsNullOrWhiteSpace(tempPath))
                     return Problem("Unable to save a file");
 
-                var existingPhrases = (await _bannedPhraseRepository.GetAllAsync()).ToList();
+                var existingPhrases = (await _unitOfWork.BannedPhrases.GetAllAsync()).ToList();
                 var fileLines = (await _fileService.GetLinesAsync(tempPath)).ToList();
 
                 var addedPhraseCount = 0;
@@ -88,13 +88,12 @@ namespace ProfanityChecker.WebApi.Controllers
                 {
                     if (!string.IsNullOrWhiteSpace(line) && existingPhrases.All(x => x.Name != line))
                     {
-                        await _bannedPhraseRepository.AddAsync(new BannedPhrase {Name = line});
+                        await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase {Name = line});
                         addedPhraseCount++;
                     }
                 }
                 
-                // TODO: repo save changes
-                
+                await _unitOfWork.SaveChangesAsync();
                 await _fileService.DeleteFileAsync(tempPath);
                 return CreatedAtAction(nameof(CreateRangeFromFile), addedPhraseCount);
             }
@@ -104,10 +103,11 @@ namespace ProfanityChecker.WebApi.Controllers
         [ApiConventionMethod(typeof(ApiConventions), nameof(ApiConventions.Delete))]
         public async Task<ActionResult> Delete(long id, CancellationToken ct = default)
         {
-            var bannedPhrase = await _bannedPhraseRepository.GetByIdAsync(id);
+            var bannedPhrase = await _unitOfWork.BannedPhrases.GetByIdAsync(id);
             if (bannedPhrase == null) return NotFound();
             
-            await _bannedPhraseRepository.DeleteAsync(bannedPhrase);
+            await _unitOfWork.BannedPhrases.DeleteAsync(bannedPhrase);
+            await _unitOfWork.SaveChangesAsync();
             return Ok();
         }
     }

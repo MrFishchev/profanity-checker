@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +33,9 @@ namespace ProfanityChecker.WebApi
                 options => options.UseSqlite(@"Data Source=../db/profanity_checker.db")
             );
             
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));  
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IBannedPhraseRepository, BannedPhraseRepository>();
+            
             services.AddTransient<IFileService, FileService>();
             services.AddScoped<IProfanityService, ProfanityService>();
             services.AddSingleton<IAlgorithmFactory, AlgorithmFactory>();

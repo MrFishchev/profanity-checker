@@ -10,20 +10,20 @@ namespace ProfanityChecker.Logic
     public class ProfanityService : IProfanityService
     {
         private readonly IAlgorithmFactory _algorithmFactory;
-        private readonly IBannedPhraseRepository _bannedPhraseRepository;
         private readonly ILogger<ProfanityService> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProfanityService(IAlgorithmFactory algorithmFactory, IBannedPhraseRepository bannedPhraseRepository,
+        public ProfanityService(IAlgorithmFactory algorithmFactory, IUnitOfWork unitOfWork,
             ILogger<ProfanityService> logger)
         {
             _algorithmFactory = algorithmFactory;
-            _bannedPhraseRepository = bannedPhraseRepository;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         public async Task<ProfanityScanResult> ScanAsync(string data, CancellationToken ct)
         {
-            var dictionary = await _bannedPhraseRepository.GetAllAsync();
+            var dictionary = await _unitOfWork.BannedPhrases.GetAllAsync();
             var searchingAlgorithm = _algorithmFactory.CreateAlgorithm<AhoCorasickAlgorithm>(dictionary.Select(x => x.Name));
             var search = searchingAlgorithm.FindAll(data, ct).ToList();
             
