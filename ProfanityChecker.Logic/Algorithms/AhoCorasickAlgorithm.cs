@@ -30,6 +30,11 @@ namespace ProfanityChecker.Logic
             SetFailureNodes();
         }
 
+        public static AhoCorasickAlgorithm Create(IEnumerable<string> dictionary)
+        {
+            return new(dictionary.ToList());
+        }
+
         public IEnumerable<ProfanityItem> FindAll(string data, CancellationToken ct)
         {
             var result = new List<ProfanityItem>();
