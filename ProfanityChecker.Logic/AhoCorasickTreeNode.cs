@@ -37,8 +37,8 @@ namespace ProfanityChecker.Logic
             return node;
         }
 
-        public AhoCorasickTreeNode GetTransition(char c) => _transitionsDictionary.GetValueOrDefault(c);
+        public AhoCorasickTreeNode GetTransition(char c) => _transitionsDictionary.GetValueOrDefault(char.ToLower(c));
 
-        public bool ContainsTransition(char c) => _transitionsDictionary.ContainsKey(c);
+        public bool ContainsTransition(char c) => _transitionsDictionary.ContainsKey(char.ToLower(c));
     }
 }

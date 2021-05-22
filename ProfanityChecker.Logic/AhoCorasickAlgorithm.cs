@@ -127,7 +127,7 @@ namespace ProfanityChecker.Logic
         private void AddPatternToTree(string pattern)
         {
             var node = Root;
-            foreach (var c in pattern)
+            foreach (var c in pattern.ToLower())
             {
                 node = node.GetTransition(c) ?? node.AddTransition(c);
             }
