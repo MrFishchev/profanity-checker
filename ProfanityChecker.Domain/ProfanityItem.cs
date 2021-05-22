@@ -9,9 +9,9 @@ namespace ProfanityChecker.Domain
         
         public string Data => _data;
 
-        public List<int> Indexes { get; set; } = new();
+        public HashSet<int> Indexes { get; private set; } = new();
 
-        public string FullBounds { get; }
+        public HashSet<string> FullBounds { get; private set; } = new();
 
         public ProfanityItem(string data, string fullBounds, int index)
         {
@@ -19,7 +19,7 @@ namespace ProfanityChecker.Domain
                 throw new ArgumentNullException(nameof(data), "Parameter cannot be null or empty");
 
             _data = data;
-            FullBounds = fullBounds;
+            FullBounds.Add(fullBounds);
             Indexes.Add(index);
         }
 
@@ -35,7 +35,7 @@ namespace ProfanityChecker.Domain
 
         public override int GetHashCode()
         {
-            return Data.GetHashCode() ^ FullBounds.GetHashCode();
+            return Data.GetHashCode();
         }
     }
 }

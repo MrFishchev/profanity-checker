@@ -53,6 +53,7 @@ namespace ProfanityChecker.Logic
                     var existing = result.FirstOrDefault(x => x.Equals(profanityItem));
                     if (existing != null)
                     {
+                        existing.FullBounds.Add(fullBounds);
                         existing.Indexes.Add(startIndex);
                     }
                     else

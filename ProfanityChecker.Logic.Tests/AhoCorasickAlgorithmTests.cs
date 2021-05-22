@@ -73,7 +73,8 @@ namespace ProfanityChecker.Logic.Tests
             var result = _searchingAlgorithm.FindAll(text).ToList();
 
             result.Should().HaveCount(1);
-            result.First().FullBounds.Should().Be(expectedBound);
+            result.First().FullBounds.Should().HaveCount(1);
+            result.First().FullBounds.First().Should().Be(expectedBound);
         }
 
         [TestCase("aa bb", 1, 1)]
@@ -104,7 +105,8 @@ namespace ProfanityChecker.Logic.Tests
             var result = _searchingAlgorithm.FindAll(text).ToList();
 
             result.Should().HaveCount(1);
-            result.First().FullBounds.Should().Be(expectedBounds);
+            result.First().FullBounds.Should().HaveCount(1);
+            result.First().FullBounds.First().Should().Be(expectedBounds);
             result.First().Data.Should().Be("a b");
             result.First().Indexes.Should().HaveCount(1);
             result.First().Indexes.First().Should().Be(5);
