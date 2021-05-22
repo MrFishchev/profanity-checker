@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProfanityChecker.Infrastructure
@@ -14,9 +15,9 @@ namespace ProfanityChecker.Infrastructure
             _context = context;
         }
 
-        public Task SaveChangesAsync()
+        public Task SaveChangesAsync(CancellationToken ct)
         {
-            return _context.SaveChangesAsync();
+            return _context.SaveChangesAsync(ct);
         }
 
         public void Dispose()

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProfanityChecker.Infrastructure
@@ -6,6 +7,7 @@ namespace ProfanityChecker.Infrastructure
     public interface IUnitOfWork : IDisposable
     {
         IBannedPhraseRepository BannedPhrases { get; }
-        Task SaveChangesAsync();
+        
+        Task SaveChangesAsync(CancellationToken ct = default);
     }
 }

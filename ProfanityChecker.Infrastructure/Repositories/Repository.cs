@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -15,11 +16,11 @@ namespace ProfanityChecker.Infrastructure
             DataContext = dataContext;
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken ct)
         {
             try
             {
-                return await DataContext.Set<TEntity>().AsNoTracking().ToListAsync();
+                return await DataContext.Set<TEntity>().AsNoTracking().ToListAsync(ct);
             }
             catch (Exception e)
             {
@@ -28,14 +29,14 @@ namespace ProfanityChecker.Infrastructure
             }
         }
 
-        public async Task<TEntity> AddAsync(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity), "Parameter must be not null");
 
             try
             {
-                await DataContext.AddAsync(entity);
+                await DataContext.AddAsync(entity, ct);
                 return entity;
             }
             catch (Exception e)
