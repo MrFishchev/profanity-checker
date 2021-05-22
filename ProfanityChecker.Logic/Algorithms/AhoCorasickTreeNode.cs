@@ -12,7 +12,7 @@ namespace ProfanityChecker.Logic
         public HashSet<string> Result => _result;
         public AhoCorasickTreeNode ParentFailure => _parent?.Failure;
         public IEnumerable<AhoCorasickTreeNode> Transactions => _transitionsDictionary.Values;
-        public char Value { get; private set; }
+        public char Value { get; }
         public AhoCorasickTreeNode Failure { get; set; }
 
         private AhoCorasickTreeNode(AhoCorasickTreeNode parent, char value)
