@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfanityChecker.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfanityChecker.Logic.Tests", "ProfanityChecker.Logic.Tests\ProfanityChecker.Logic.Tests.csproj", "{4C131220-97BA-4057-AA54-4E421DBC11EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfanityChecker.Infrastructure.Tests", "ProfanityChecker.Infrastructure.Tests\ProfanityChecker.Infrastructure.Tests.csproj", "{90A32210-3CC1-4D55-A098-D7C69D9E5E7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,8 +40,13 @@ Global
 		{4C131220-97BA-4057-AA54-4E421DBC11EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C131220-97BA-4057-AA54-4E421DBC11EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C131220-97BA-4057-AA54-4E421DBC11EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90A32210-3CC1-4D55-A098-D7C69D9E5E7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A32210-3CC1-4D55-A098-D7C69D9E5E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90A32210-3CC1-4D55-A098-D7C69D9E5E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A32210-3CC1-4D55-A098-D7C69D9E5E7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4C131220-97BA-4057-AA54-4E421DBC11EA} = {E2241A81-2CB8-4909-A7DD-4D616F1AFAAB}
+		{90A32210-3CC1-4D55-A098-D7C69D9E5E7E} = {E2241A81-2CB8-4909-A7DD-4D616F1AFAAB}
 	EndGlobalSection
 EndGlobal

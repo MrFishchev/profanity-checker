@@ -25,9 +25,9 @@ namespace ProfanityChecker.Logic.Tests
         public void CreateAlgorithm_WhenCalled_ReturnsInstanceOfAnAlgorithm()
         {
             var instance = _algorithmFactory
-                .CreateAlgorithm<AhoCorasickAlgorithm>(new List<string>{"abc"});
+                .CreateAlgorithm<AhoCorasickAlgorithm>(new List<string> {"abc"});
 
-        instance.Should().NotBeNull();
+            instance.Should().NotBeNull();
         }
     }
 }
