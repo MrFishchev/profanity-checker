@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  profanity-checker:
+    image: profanity-checker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+    container_name: profanity-checker
+    build:
+      dockerfile: ./ProfanityChecker.WebApi/Dockerfile
+      context: .
+    volumes:
+      - db:/app/db
+    ports:
+      - '9001:5000'
+    restart: unless-stopped
+volumes:
+  db:

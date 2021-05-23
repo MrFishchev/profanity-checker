@@ -30,7 +30,7 @@ namespace ProfanityChecker.WebApi
             });
 
             services.AddDbContext<DataContext>(
-                options => options.UseSqlite(@"Data Source=../db/profanity_checker.db")
+                options => options.UseSqlite(@"Data Source=db/profanity_checker.db")
             );
             
             services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -47,9 +47,10 @@ namespace ProfanityChecker.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProfanityChecker.WebApi v1"));
             }
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProfanityChecker.WebApi v1"));
 
             app.UseSerilogRequestLogging();
 
