@@ -37,11 +37,11 @@ namespace ProfanityChecker.WebApi.Controllers
             {
                 var tempPath = await _fileService.SaveAsTempFileAsync(file, ct);
                 if (string.IsNullOrWhiteSpace(tempPath))
-                    return Problem("Unable to save a file");
+                    return Conflict("Unable to save a file");
 
                 var fileData = await _fileService.GetWholeTextAsync(tempPath);
                 if (string.IsNullOrWhiteSpace(fileData))
-                    return NoContent();
+                    return Conflict("Unable to read a file or it is empty");
 
                 var result = await _profanityService.ScanAsync(fileData, ct);
                 await _fileService.DeleteFileAsync(tempPath);

@@ -58,7 +58,7 @@ namespace ProfanityChecker.WebApi.Controllers
             async Task<ActionResult<long>> CreateAsync()
             {
                 var entity = await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase(request.Name), ct);
-                return entity is null ? Conflict() : CreatedAtAction(nameof(Create), entity.Id);
+                return CreatedAtAction(nameof(Create), entity.Id);
             }
         }
         
@@ -88,7 +88,7 @@ namespace ProfanityChecker.WebApi.Controllers
                 {
                     if (!string.IsNullOrWhiteSpace(line) && existingPhrases.All(x => x.Name != line))
                     {
-                        await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase(line), ct);
+                        _ = await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase(line), ct);
                         addedPhraseCount++;
                     }
                 }
