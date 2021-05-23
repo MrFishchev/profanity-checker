@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ProfanityChecker.Logic;
 using ProfanityChecker.Logic.DTO;
 
@@ -16,8 +15,7 @@ namespace ProfanityChecker.WebApi.Controllers
         private readonly IProfanityService _profanityService;
         private readonly IFileService _fileService;
 
-        public ProfanityController(IProfanityService profanityService, IFileService fileService,
-            ILogger<ProfanityController> logger)
+        public ProfanityController(IProfanityService profanityService, IFileService fileService)
         {
             _profanityService = profanityService;
             _fileService = fileService;
