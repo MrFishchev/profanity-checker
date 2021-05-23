@@ -23,6 +23,8 @@ namespace ProfanityChecker.Logic
         {
             try
             {
+                if (file.Length == 0) return null;
+                
                 var tempPath = Path.GetTempFileName();
                 await using var fs = new FileStream(tempPath, FileMode.Truncate);
                 await file.CopyToAsync(fs, ct);
@@ -79,7 +81,7 @@ namespace ProfanityChecker.Logic
             }
             catch (OperationCanceledException e)
             {
-                _logger.LogInformation($"Operation was cancelled {nameof(GetLinesAsync)}");
+                _logger.LogInformation(e,$"Operation was cancelled {nameof(GetLinesAsync)}");
                 return new List<string>(0);
             }
             catch (Exception e)

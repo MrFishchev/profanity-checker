@@ -70,7 +70,7 @@ namespace ProfanityChecker.Logic
                     }
                 }
             }
-            catch (OperationCanceledException e)
+            catch
             {
                 return new List<ProfanityItem>(0);
             }
@@ -121,7 +121,7 @@ namespace ProfanityChecker.Logic
                     if (node.Result.Any()) return true;
                 }
             }
-            catch (OperationCanceledException e)
+            catch
             {
                 return false;
             }

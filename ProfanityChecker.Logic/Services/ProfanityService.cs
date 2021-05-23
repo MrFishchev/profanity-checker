@@ -24,7 +24,9 @@ namespace ProfanityChecker.Logic
 
         public async Task<ProfanityScanResult> ScanAsync(string data, CancellationToken ct)
         {
-            var dictionary = await _unitOfWork.BannedPhrases.GetAllAsync();
+            if(string.IsNullOrWhiteSpace(data)) return ProfanityScanResult.NoProfanity;
+            
+            var dictionary = await _unitOfWork.BannedPhrases.GetAllAsync(ct);
             var searchingAlgorithm = _algorithmFactory.CreateAlgorithm<AhoCorasickAlgorithm>(dictionary.Select(x => x.Name));
             var search = searchingAlgorithm.FindAll(data, ct).ToList();
             

@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
+// ReSharper disable once CheckNamespace
 namespace ProfanityChecker.Logic.Tests
 {
     [TestFixture]
