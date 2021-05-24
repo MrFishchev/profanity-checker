@@ -58,6 +58,7 @@ namespace ProfanityChecker.WebApi.Controllers
             async Task<ActionResult<long>> CreateAsync()
             {
                 var entity = await _unitOfWork.BannedPhrases.AddAsync(new BannedPhrase(request.Name), ct);
+                await _unitOfWork.SaveChangesAsync(ct);
                 return CreatedAtAction(nameof(Create), entity.Id);
             }
         }
